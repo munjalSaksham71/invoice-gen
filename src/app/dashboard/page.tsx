@@ -156,18 +156,21 @@ const columns = [
         <div className="text-center">Actions</div>
       )
     },
-    cell: props => (
-      <div className="flex justify-center">
+    cell: props => {
+      const router = useRouter();
+      const id = props.row.original.id
+
+      return ( <div className="flex justify-center">
         <Button
           variant="ghost"
           size="sm"
           className="hover:bg-blue-50 hover:text-blue-600 transition-colors"
-          onClick={() => {}}
+          onClick={() => router.push(`/invoices/edit/${id}`)}
         >
           <Pencil className="h-4 w-4" />
         </Button>
-      </div>
-    ),
+      </div>)
+    }
   }),
 ]
 
