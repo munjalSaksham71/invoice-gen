@@ -1,5 +1,12 @@
 "use client";
-import { X, Menu, LayoutDashboard, FilePlus, UsersIcon } from "lucide-react";
+import {
+  X,
+  Menu,
+  LayoutDashboard,
+  FilePlus,
+  UsersIcon,
+  SquareChartGantt,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +25,7 @@ export function AppSidebar() {
   const items = [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     { title: "New invoice", url: "/invoices/new", icon: FilePlus },
+    { title: "Products", url: "/products", icon: SquareChartGantt },
   ];
 
   return (

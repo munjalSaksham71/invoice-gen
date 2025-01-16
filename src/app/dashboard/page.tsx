@@ -22,7 +22,7 @@ import {
 } from '@tanstack/react-table'
 import { Pencil, ArrowUpDown, Plus, Download } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { InvoiceForm, ProductData, InvoiceItem, InvoiceFormData, Product } from '@/types/invoice'
+import { InvoiceItem, InvoiceFormData, Product } from '@/types/invoice'
 import { generateInvoicePdf } from '@/lib/generatePdf'
 
 type Invoice = {

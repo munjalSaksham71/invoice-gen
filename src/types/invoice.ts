@@ -13,6 +13,10 @@ export interface Product {
   id: string;
   name: string;
   unit_price: number;
+  user_id: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Company {
