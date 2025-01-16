@@ -9,6 +9,7 @@ import { useSidebarStore } from "@/store/sidebarStore";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export function AppSidebar() {
   const { isExpanded, toggleSidebar } = useSidebarStore();
@@ -104,6 +105,7 @@ export function AppSidebar() {
               "flex items-center",
               isExpanded ? "justify-start" : "justify-center"
             )}
+            onClick={() => supabase.auth.signOut()}
           >
             <UsersIcon className="h-5 w-5 cursor-pointer" />
             {isExpanded && (

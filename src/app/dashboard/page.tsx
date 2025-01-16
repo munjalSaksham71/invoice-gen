@@ -20,9 +20,10 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
 } from '@tanstack/react-table'
-import { Pencil, ArrowUpDown, Plus } from 'lucide-react'
+import { Pencil, ArrowUpDown, Plus, Download } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { Badge } from '@/components/ui/badge'
+import { InvoiceForm, ProductData, InvoiceItem, InvoiceFormData, Product } from '@/types/invoice'
+import { generateInvoicePdf } from '@/lib/generatePdf'
 
 type Invoice = {
   id: string
@@ -40,21 +41,21 @@ const columnHelper = createColumnHelper<Invoice>()
 
 const columns = [
   // New S.No column
-  columnHelper.display({
-    id: 'serialNumber',
-    header: () => {
-      return (
-        <div className="text-center font-medium text-gray-600">
-          S.No
-        </div>
-      )
-    },
-    cell: (props) => (
-      <div className="text-center font-medium text-gray-600">
-        {props.row.index + 1}
-      </div>
-    ),
-  }),
+  // columnHelper.display({
+  //   id: 'serialNumber',
+  //   header: () => {
+  //     return (
+  //       <div className="text-center font-medium text-gray-600">
+  //         S.No
+  //       </div>
+  //     )
+  //   },
+  //   cell: (props) => (
+  //     <div className="text-center font-medium text-gray-600">
+  //       {props.row.index + 1}
+  //     </div>
+  //   ),
+  // }),
   columnHelper.accessor('invoice_number', {
     enableSorting: true,
     header: ({ column }) => {
@@ -160,6 +161,83 @@ const columns = [
       const router = useRouter();
       const id = props.row.original.id
 
+      const handleDownload = async () => {
+        try {
+          // Fetch the full invoice data including invoice_items and buyer details
+          const { data: invoice, error: invoiceError } = await supabase
+            .from('invoices')
+            .select(`
+              *,
+              companies!buyer_id (
+                name,
+                email,
+                phone,
+                address
+              ),
+              invoice_items (
+                product_id,
+                quantity,
+                unit_price
+              )
+            `)
+            .eq('id', id)
+            .single();
+      
+          if (invoiceError) throw invoiceError;
+      
+          // Fetch seller data
+          const { data: seller, error: sellerError } = await supabase
+            .from('companies')
+            .select('*')
+            .eq('id', invoice.seller_id)
+            .single();
+      
+          if (sellerError) throw sellerError;
+      
+          // Fetch products data using the product IDs from invoice_items
+          const productIds = invoice.invoice_items.map((item: InvoiceItem) => item.product_id);
+          const { data: products, error: productsError } = await supabase
+            .from('products')
+            .select('*')
+            .in('id', productIds);
+      
+          if (productsError) throw productsError;
+      
+          // Transform invoice_items into products with additional details
+          const invoiceProducts = invoice.invoice_items.map((item: InvoiceItem) => {
+            const product = products.find((p: Product) => p.id === item.product_id);
+            return {
+              ...item,
+              name: product ? product.name : 'Unknown Product',
+            };
+          });
+      
+          // Prepare the data for the PDF generator
+          const invoiceData: InvoiceFormData = {
+            invoice_number: invoice.invoice_number,
+            seller_id: invoice.seller_id,
+            buyer: {
+              name: invoice.companies.name,
+              email: invoice.companies.email,
+              phone: invoice.companies.phone,
+              address: invoice.companies.address,
+            },
+            issue_date: invoice.issue_date,
+            due_date: invoice.due_date,
+            products: invoice.invoice_items,
+            discount_percentage: invoice.discount_percentage,
+            shipping_charges: invoice.shipping_charges,
+            tax_percentage: invoice.tax_percentage,
+            notes: invoice.notes,
+          };
+      
+          // Generate and download the PDF
+          generateInvoicePdf(invoiceData, seller, invoiceProducts);
+        } catch (error) {
+          console.error('Error generating PDF:', error);
+        }
+      };
+
       return ( <div className="flex justify-center">
         <Button
           variant="ghost"
@@ -169,6 +247,15 @@ const columns = [
         >
           <Pencil className="h-4 w-4" />
         </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="hover:bg-green-50 hover:text-green-600 transition-colors"
+          onClick={handleDownload}
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+
       </div>)
     }
   }),
@@ -268,13 +355,6 @@ export default function Dashboard() {
           >
             <Plus className="h-4 w-4 mr-2" />
             New Invoice
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => supabase.auth.signOut()}
-            className="border-red-200 text-red-600 hover:bg-red-50 transition-colors"
-          >
-            Sign Out
           </Button>
         </div>
       </div>
