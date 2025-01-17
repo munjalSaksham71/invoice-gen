@@ -183,7 +183,7 @@ export default function ProductsDashboard() {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
+    <div className="p-8 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Products</h1>
         <Button
@@ -203,10 +203,10 @@ export default function ProductsDashboard() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
         </div>
       ) : (
-        <Table className="min-w-full">
-          <TableHeader className="bg-gray-50">
+        <Table className="border rounded-xl overflow-hidden bg-white shadow-sm">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-gray-50 border-b">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
@@ -241,18 +241,50 @@ export default function ProductsDashboard() {
         </Table>
       )}
 
-      {/* Drawer */}
-      <div
-        className={`fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isDrawerOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <ProductForm
-          defaultValues={selectedProduct || undefined}
-          onSubmit={handleSubmit}
-          onClose={() => setIsDrawerOpen(false)}
-        />
+      {/* Pagination */}
+      <div className="flex items-center justify-between mt-4">
+        <div className="text-sm text-gray-600">
+          Total {data.length} products
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="border-blue-200 text-blue-600 hover:bg-blue-50 disabled:opacity-50 transition-colors"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="border-blue-200 text-blue-600 hover:bg-blue-50 disabled:opacity-50 transition-colors"
+          >
+            Next
+          </Button>
+        </div>
       </div>
+
+      {/* Drawer */}
+      {isDrawerOpen && (
+        <div
+          className={`fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+            isDrawerOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <ProductForm
+            defaultValues={selectedProduct || undefined}
+            onSubmit={handleSubmit}
+            onClose={() => {
+              setSelectedProduct(null);
+              setIsDrawerOpen(false);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
