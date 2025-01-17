@@ -26,6 +26,7 @@ export function AppSidebar() {
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
     { title: "New invoice", url: "/invoices/new", icon: FilePlus },
     { title: "Products", url: "/products", icon: SquareChartGantt },
+    { title: "Companies", url: "/buyers", icon: UsersIcon },
   ];
 
   return (
