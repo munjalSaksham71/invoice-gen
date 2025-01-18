@@ -6,6 +6,7 @@ import {
   FilePlus,
   UsersIcon,
   SquareChartGantt,
+  LogOut,
 } from "lucide-react";
 import {
   Tooltip,
@@ -108,7 +109,23 @@ export function AppSidebar() {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-gray-200 pointer-events-auto mb-2">
+        <div className="p-4 border-t border-gray-200 pointer-events-auto ">
+       
+       <div
+           className={cn(
+             "flex items-center",
+             isExpanded ? "justify-start" : "justify-center"
+           )}
+           onClick={() => router.replace("/account")}
+         >
+           <UsersIcon className="h-5 w-5 cursor-pointer" />
+           {isExpanded && (
+             <span className="ml-2 text-sm font-medium">Account</span>
+           )}
+       </div>
+  </div>
+        <div className="p-4 border-gray-200 pointer-events-auto mb-2">
+       
           <div
             className={cn(
               "flex items-center",
@@ -116,12 +133,15 @@ export function AppSidebar() {
             )}
             onClick={() => supabase.auth.signOut()}
           >
-            <UsersIcon className="h-5 w-5 cursor-pointer" />
+            <LogOut className="h-5 w-5 cursor-pointer" />
             {isExpanded && (
               <span className="ml-2 text-sm font-medium">Sign out</span>
             )}
           </div>
         </div>
+       
+
+        
       </div>
 
       {/* Overlay */}
