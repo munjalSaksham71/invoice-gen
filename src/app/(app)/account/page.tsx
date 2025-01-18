@@ -48,32 +48,38 @@ export default function AccountSection() {
     setEditMode(false);
   };
 
-  // const handleSave = useCallback(async () => {
-  //   try {
-  //     const { error } = await supabase
-  //       .from('users') // Replace with the actual table name
-  //       .update({
-  //         name: formValues.name,
-  //         email: formValues.email,
-  //         phone: formValues.phone,
-  //         address: formValues.address,
-  //       })
-  //       .eq('id', userDetails.id);
-
-  //     if (error) throw error;
-
-  //     setUserDetails(formValues); // Update displayed data
-  //     setEditMode(false);
-  //     router.refresh();
-  //   } catch (error) {
-  //     console.error('Error updating user details:', error);
-  //   }
-  // }, [formValues, userDetails, router]);
-
   const handleSave = async () => {
-    
-  }
+    try {
+      if (!formValues) {
+        throw new Error('No form values to save');
+      }
   
+      const { error } = await supabase
+        .from('companies') // Replace with your actual table name
+        .update({
+          name: formValues.name,
+          email: formValues.email,
+          phone: formValues.phone,
+          address: formValues.address,
+        })
+        .eq('user_id', userDetails.user_id) // Ensure it matches the correct user
+        .eq('is_seller', true); // Match 'is_seller = TRUE'
+  
+      if (error) {
+        throw error;
+      }
+  
+      // Update the displayed user details
+      setUserDetails(formValues);
+      setEditMode(false);
+      router.refresh(); // Refresh the page to reflect changes
+    } catch (error) {
+      console.error('Error updating user details:', error);
+      alert('Failed to save changes. Please try again.');
+    }
+  };
+  
+
   const handleChange = (e:any) => {
     const { name, value } = e.target;
     setFormValues((prev:any) => ({ ...prev, [name]: value }));
