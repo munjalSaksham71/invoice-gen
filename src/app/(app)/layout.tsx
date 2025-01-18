@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
+import { AppSidebar } from "@/components/AppSidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,14 +25,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
+    
+      <div
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className="flex-1 p-6 w-full justify-center">
+        <TooltipProvider>
+          <div className="flex min-h-screen w-full">
+            <AppSidebar />
+            <div
+              className="flex-1 flex flex-col transition-all duration-300"
+              style={{
+                paddingLeft: "4rem",
+              }}
+            >
+              <main className="flex-1 p-6 w-full justify-center">
                 {children}
               </main>
-      </body>
-    </html>
+            </div>
+          </div>
+        </TooltipProvider>
+      </div>
+
   );
 }
