@@ -48,28 +48,32 @@ export default function AccountSection() {
     setEditMode(false);
   };
 
-  const handleSave = useCallback(async () => {
-    try {
-      const { error } = await supabase
-        .from('users') // Replace with the actual table name
-        .update({
-          name: formValues.name,
-          email: formValues.email,
-          phone: formValues.phone,
-          address: formValues.address,
-        })
-        .eq('id', userDetails.id);
+  // const handleSave = useCallback(async () => {
+  //   try {
+  //     const { error } = await supabase
+  //       .from('users') // Replace with the actual table name
+  //       .update({
+  //         name: formValues.name,
+  //         email: formValues.email,
+  //         phone: formValues.phone,
+  //         address: formValues.address,
+  //       })
+  //       .eq('id', userDetails.id);
 
-      if (error) throw error;
+  //     if (error) throw error;
 
-      setUserDetails(formValues); // Update displayed data
-      setEditMode(false);
-      router.refresh();
-    } catch (error) {
-      console.error('Error updating user details:', error);
-    }
-  }, [formValues, userDetails, router]);
+  //     setUserDetails(formValues); // Update displayed data
+  //     setEditMode(false);
+  //     router.refresh();
+  //   } catch (error) {
+  //     console.error('Error updating user details:', error);
+  //   }
+  // }, [formValues, userDetails, router]);
 
+  const handleSave = async () => {
+    
+  }
+  
   const handleChange = (e:any) => {
     const { name, value } = e.target;
     setFormValues((prev:any) => ({ ...prev, [name]: value }));
