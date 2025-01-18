@@ -21,14 +21,14 @@ const LoginForm = () => {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data,error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-
-      router.push('/')
+      document.cookie = `access_token=${data?.session?.access_token}; path=/; secure; samesite=strict;`;
+      router.replace("/dashboard");
     } catch (error: any) {
       setError(error.message);
     } finally {

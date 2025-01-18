@@ -6,16 +6,16 @@ import { useEffect } from 'react'
 
 export default function LoginPage() {
     const router = useRouter();
-    useEffect(() => {
-        const checkUser = async () => {
-          const { data: { session } } = await supabase.auth.getSession()
-          if (session) {
-            router.push('/')
-          }
-        }
+    // useEffect(() => {
+    //     const checkUser = async () => {
+    //       const { data: { session } } = await supabase.auth.getSession()
+    //       if (session) {
+    //         router.push('/')
+    //       }
+    //     }
         
-        checkUser()
-      }, [router])
+    //     checkUser()
+    //   }, [router])
 
   return <LoginForm />
 }

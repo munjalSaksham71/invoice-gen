@@ -23,6 +23,7 @@ import { Pencil, ArrowUpDown, Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Product } from "@/types/invoice";
 import ProductForm from "@/components/products/product-form";
+import { useRouter } from "next/navigation";
 
 const createColumns = (handleEdit: (product: Product) => void) => {
   const columnHelper = createColumnHelper<Product>();
@@ -96,6 +97,7 @@ const createColumns = (handleEdit: (product: Product) => void) => {
 };
 
 export default function ProductsDashboard() {
+  const router = useRouter();
   const [data, setData] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -129,7 +131,10 @@ export default function ProductsDashboard() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not logged in");
+      if (!user){
+        router.push('/login')
+        throw new Error("User not logged in");
+      }
 
       const { data: products, error } = await supabase
         .from("products")
@@ -155,7 +160,10 @@ export default function ProductsDashboard() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not logged in");
+      if (!user){
+        router.push('/login')
+        throw new Error("User not logged in");
+      }
 
       if (selectedProduct) {
         // Update existing product
