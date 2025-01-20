@@ -26,7 +26,7 @@ export function AppSidebar() {
 
   const items = [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "New invoice", url: "/invoices/new", icon: FilePlus },
+    { title: "Invoices", url: "/invoices", icon: FilePlus },
     { title: "Products", url: "/products", icon: SquareChartGantt },
     { title: "Companies", url: "/buyers", icon: UsersIcon },
   ];
