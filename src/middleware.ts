@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { cookies } from "next/headers";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 
 export async function middleware(request: NextRequest) {
-  const token = (await cookies()).get("access_token")?.value;
+  // Initialize the Supabase client
+  const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
+
+  // Fetch the session
+  const { data: { session } } = await supabase.auth.getSession();
 
   const url = request.nextUrl;
 
-  // Redirect to dashboard if logged in and accessing login or signup pages
+  // Redirect to dashboard if logged in and accessing login, signup, or home page
   if (
-    token &&
+    session &&
     (url.pathname === "/login" ||
       url.pathname === "/signup" ||
       url.pathname === "/")
@@ -17,13 +21,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Redirect to login if accessing dashboard without being logged in
-  if (!token && (url.pathname.startsWith("/dashboard") || url.pathname.startsWith("/products") || url.pathname.startsWith("/buyers") ||url.pathname.startsWith("/invoices"))) {
+  // Redirect to login if accessing protected routes without being logged in
+  if (
+    !session &&
+    (url.pathname.startsWith("/dashboard") ||
+      url.pathname.startsWith("/products") ||
+      url.pathname.startsWith("/buyers") ||
+      url.pathname.startsWith("/invoices"))
+  ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
+
+  // Continue with the request
+  return NextResponse.next();
 }
 
 // Define the routes where middleware should apply
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)',"/", "/login", "/signup", "/dashboard", "/products", "/buyers", "/invoices/:path*"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/",
+    "/login",
+    "/signup",
+    "/dashboard",
+    "/products",
+    "/buyers",
+    "/invoices/:path*",
+  ],
 };

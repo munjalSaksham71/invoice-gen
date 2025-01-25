@@ -16,16 +16,17 @@ import {
 import { useSidebarStore } from "@/store/sidebarStore";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export function AppSidebar() {
   const { isExpanded, toggleSidebar } = useSidebarStore();
   const router = useRouter();
+  const path = usePathname();
 
   const items = [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "New invoice", url: "/invoices/new", icon: FilePlus },
+    { title: "Invoices", url: "/invoices", icon: FilePlus },
     { title: "Products", url: "/products", icon: SquareChartGantt },
     { title: "Companies", url: "/buyers", icon: UsersIcon },
   ];
@@ -62,7 +63,7 @@ export function AppSidebar() {
           </div>
           <nav className="mt-6">
             {items.map((item) => {
-              const isActive = location.pathname === item.url;
+              const isActive = path === item.url;
               return (
                 <div key={item.url} className="mb-2">
                   <Tooltip>

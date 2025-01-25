@@ -19,15 +19,17 @@ const LoginForm = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     try {
-      const { data,error } = await supabase.auth.signInWithPassword({
+      // Sign in with email and password
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
+  
       if (error) throw error;
-      document.cookie = `access_token=${data?.session?.access_token}; path=/; secure; samesite=strict;`;
+  
+      // Redirect to the dashboard after successful login
       router.replace("/dashboard");
     } catch (error: any) {
       setError(error.message);
