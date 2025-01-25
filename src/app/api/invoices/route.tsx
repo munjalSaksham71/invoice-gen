@@ -53,7 +53,7 @@ export async function GET() {
     }
 
     // Map and transform data into the desired structure
-    const invoices = map(invoice_data,(invoice) => {
+    const invoices = map(invoice_data,(invoice: any) => {
 
       const total = find(totals,{invoice_id: invoice.id})?.subtotal || 0;
       const discountedAmount = total - (total * (invoice.discount_percentage || 0)) / 100;
