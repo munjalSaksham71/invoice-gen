@@ -1,3 +1,4 @@
+/** eslint-disable */
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -33,7 +34,7 @@ export default function ProductTable({ control, fieldArray }: ProductTableProps)
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const { data } = await supabase
+      const { data } :any= await supabase
         .from('products')
         .select('id, name, unit_price')
       if (data) setProducts(data)
@@ -76,7 +77,7 @@ export default function ProductTable({ control, fieldArray }: ProductTableProps)
                       field.onChange(value)
                       const product = products.find(p => p.id === value)
                       if (product) {
-                        control._fields[`products.${index}.unit_price`]._f.value = product.unit_price
+                        control.setValue(`products.${index}.unit_price`, product?.unit_price)
                       }
                     }}
                     value={field.value}

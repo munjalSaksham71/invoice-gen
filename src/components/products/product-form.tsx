@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/lib/supabase";
+// import { supabase } from "@/lib/supabase";
 import { Product } from "@/types/invoice";
 import { useEffect } from "react";
 

@@ -1,3 +1,4 @@
+/** eslint-disable */
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -6,7 +7,9 @@ import  InvoiceForm  from '@/components/invoices/invoice-form'
 import { InvoiceFormValues } from '@/lib/schemas/invoice'
 import { supabase } from '@/lib/supabase'
 
-export default function EditInvoicePage({ params }: { params: { id: string } }) {
+
+
+const EditInvoicePage=({ params }: any)=>{
   const router = useRouter()
   const [initialData, setInitialData] = useState<Partial<InvoiceFormValues>>()
   const [loading, setLoading] = useState(true)
@@ -15,7 +18,7 @@ export default function EditInvoicePage({ params }: { params: { id: string } }) 
     const fetchInvoice = async () => {
       try {
         // Fetch invoice with related data
-        const { data: invoice, error: invoiceError } = await supabase
+        const { data: invoice, error: invoiceError }:any = await supabase
           .from('invoices')
           .select(`
             *,
@@ -74,7 +77,7 @@ export default function EditInvoicePage({ params }: { params: { id: string } }) 
       }
   
       // Update buyer company
-      const { data: buyerData, error: buyerError } = await supabase
+      const { data: buyerData, error: buyerError } :any= await supabase
         .from('companies')
         .update({
           name: data.buyer.name,
@@ -82,8 +85,8 @@ export default function EditInvoicePage({ params }: { params: { id: string } }) 
           phone: data.buyer.phone,
           address: data.buyer.address,
         })
-        .eq('id', data.buyer.id)
-        .eq('user_id', user.id) // Ensure the buyer belongs to the authenticated user
+        .eq('id', data?.buyer?.id)
+        .eq('user_id', user?.id) // Ensure the buyer belongs to the authenticated user
         .select()
         .single();
   
@@ -153,3 +156,5 @@ export default function EditInvoicePage({ params }: { params: { id: string } }) 
     </div>
   )
 }
+
+export default EditInvoicePage

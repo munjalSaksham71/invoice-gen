@@ -140,38 +140,38 @@ export default function BuyersTable() {
     onPaginationChange: setPagination,
   });
 
-  useEffect(() => {
-    const fetchBuyers = async () => {
-      try {
-        const {
-          data: { user },
-          error: authError,
-        } = await supabase.auth.getUser();
+  const fetchBuyers = async () => {
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-        if (authError) throw authError;
+      if (authError) throw authError;
 
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-
-        const { data: buyers, error } = await supabase
-          .from("companies")
-          .select("*")
-          .eq("is_seller", false)
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
-
-        setData(buyers);
-      } catch (error) {
-        console.error("Error fetching buyers:", error);
-      } finally {
-        setLoading(false);
+      if (!user) {
+        router.push("/login");
+        return;
       }
-    };
 
+      const { data: buyers, error } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("is_seller", false)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setData(buyers);
+    } catch (error) {
+      console.error("Error fetching buyers:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchBuyers();
   }, []);
 

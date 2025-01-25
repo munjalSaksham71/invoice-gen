@@ -35,16 +35,16 @@ const SignUpForm = () => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
+  // const handleGoogleSignUp = async () => {
+  //   try {
+  //     const { error } = await supabase.auth.signInWithOAuth({
+  //       provider: 'google',
+  //     });
+  //     if (error) throw error;
+  //   } catch (error: any) {
+  //     setError(error.message);
+  //   }
+  // };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
