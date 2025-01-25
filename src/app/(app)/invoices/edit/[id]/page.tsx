@@ -22,12 +22,6 @@ const EditInvoicePage=({ params }: any)=>{
           .from('invoices')
           .select(`
             *,
-            companies!buyer_id (
-              name,
-              email,
-              phone,
-              address
-            ),
             invoice_items (
               product_id,
               quantity,
@@ -42,12 +36,7 @@ const EditInvoicePage=({ params }: any)=>{
         setInitialData({
           invoice_number: invoice.invoice_number,
           seller_id: invoice.seller_id,
-          buyer: {
-            name: invoice.companies.name,
-            email: invoice.companies.email,
-            phone: invoice.companies.phone,
-            address: invoice.companies.address,
-          },
+          buyer_id: invoice.buyer_id,
           issue_date: invoice.issue_date,
           due_date: invoice.due_date,
           products: invoice.invoice_items,
@@ -77,20 +66,20 @@ const EditInvoicePage=({ params }: any)=>{
       }
   
       // Update buyer company
-      const { data: buyerData, error: buyerError } :any= await supabase
-        .from('companies')
-        .update({
-          name: data.buyer.name,
-          email: data.buyer.email,
-          phone: data.buyer.phone,
-          address: data.buyer.address,
-        })
-        .eq('id', data?.buyer?.id)
-        .eq('user_id', user?.id) // Ensure the buyer belongs to the authenticated user
-        .select()
-        .single();
+      // const { data: buyerData, error: buyerError } :any= await supabase
+      //   .from('companies')
+      //   .update({
+      //     name: data.buyer.name,
+      //     email: data.buyer.email,
+      //     phone: data.buyer.phone,
+      //     address: data.buyer.address,
+      //   })
+      //   .eq('id', data?.buyer?.id)
+      //   .eq('user_id', user?.id) // Ensure the buyer belongs to the authenticated user
+      //   .select()
+      //   .single();
   
-      if (buyerError) throw buyerError;
+      // if (buyerError) throw buyerError;
   
       // Update invoice
       const { error: invoiceError } = await supabase
@@ -98,6 +87,7 @@ const EditInvoicePage=({ params }: any)=>{
         .update({
           invoice_number: data.invoice_number,
           seller_id: data.seller_id,
+          buyer_id: data.buyer_id,
           issue_date: data.issue_date,
           due_date: data.due_date,
           discount_percentage: data.discount_percentage,
@@ -133,7 +123,7 @@ const EditInvoicePage=({ params }: any)=>{
       if (itemsError) throw itemsError;
   
       // Redirect and refresh
-      router.push('/dashboard');
+      router.push('/invoices');
       router.refresh();
     } catch (error) {
       console.error('Error updating invoice:', error);

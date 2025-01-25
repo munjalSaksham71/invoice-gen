@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase'
 export default function NewInvoicePage() {
   const router = useRouter()
 
-  const handleSubmit = useCallback(async (data: InvoiceFormValues) => {
+  const handleSubmit = async (data: InvoiceFormValues) => {
     try {
       // Fetch the authenticated user's ID
       const { data: { user } } = await supabase.auth.getUser();
@@ -19,29 +19,29 @@ export default function NewInvoicePage() {
       }
   
       // Insert buyer company first
-      const { data: buyerData, error: buyerError } = await supabase
-        .from('companies')
-        .insert({
-          user_id: user.id, // Include the authenticated user's ID
-          name: data.buyer.name,
-          email: data.buyer.email,
-          phone: data.buyer.phone,
-          address: data.buyer.address,
-          is_seller: false
-        })
-        .select()
-        .single();
+      // const { data: buyerData, error: buyerError } = await supabase
+      //   .from('companies')
+      //   .insert({
+      //     user_id: user.id, // Include the authenticated user's ID
+      //     name: data.buyer.name,
+      //     email: data.buyer.email,
+      //     phone: data.buyer.phone,
+      //     address: data.buyer.address,
+      //     is_seller: false
+      //   })
+      //   .select()
+      //   .single();
   
-      if (buyerError) throw buyerError;
+      // if (buyerError) throw buyerError;
   
       // Insert invoice
       const { data: invoiceData, error: invoiceError } = await supabase
         .from('invoices')
         .insert({
-          user_id: user.id, // Include the authenticated user's ID
+          user_id: user.id,
           invoice_number: data.invoice_number,
           seller_id: data.seller_id,
-          buyer_id: buyerData.id,
+          buyer_id: data.buyer_id,
           status: 'draft',
           issue_date: data.issue_date,
           due_date: data.due_date,
@@ -69,13 +69,13 @@ export default function NewInvoicePage() {
   
       if (itemsError) throw itemsError;
   
-      router.push('/dashboard');
+      router.push('/invoices');
       router.refresh();
     } catch (error) {
       console.error('Error creating invoice:', error);
       // Here you would typically show an error toast/notification
     }
-  }, [router]);
+  };
 
   return (
     <div className="p-8 max-w-7xl mx-auto">

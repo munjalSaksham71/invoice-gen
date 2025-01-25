@@ -3,13 +3,7 @@ import * as z from 'zod'
 export const invoiceSchema = z.object({
   invoice_number: z.string().min(1, 'Invoice number is required'),
   seller_id: z.string().uuid('Please select a seller'),
-  buyer: z.object({
-    id : z.string().optional(),
-    name: z.string().min(1, 'Buyer name is required'),
-    email: z.string().email('Invalid email').optional().or(z.literal('')),
-    phone: z.string().optional(),
-    address: z.string().min(1, 'Address is required'),
-  }),
+  buyer_id: z.string().uuid('Please select a buyer'),
   issue_date: z.string(),
   due_date: z.string().optional(),
   products: z.array(z.object({
