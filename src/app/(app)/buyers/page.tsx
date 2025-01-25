@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import BuyerForm from "@/components/buyers/buyer-form";
 import {
   Table,
   TableBody,
@@ -23,7 +24,6 @@ import {
 import { Pencil, ArrowUpDown, Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Company } from "@/types/invoice";
-import BuyerForm from "@/components/buyers/buyer-form";
 
 type Buyer = {
   id: string;
@@ -35,81 +35,80 @@ type Buyer = {
 };
 
 const createColumns = (handleEdit: (buyer: Buyer) => void) => {
-    const columnHelper = createColumnHelper<Buyer>();
+  const columnHelper = createColumnHelper<Buyer>();
 
-    return [
-        columnHelper.accessor("name", {
-          enableSorting: true,
-          header: ({ column }) => {
-            return (
-              <div
-                className="cursor-pointer select-none flex items-center"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              >
-                Name
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-              </div>
-            );
-          },
-          cell: (info) => (
-            <span className="font-medium text-gray-900">{info.getValue()}</span>
-          ),
-        }),
-        columnHelper.accessor("email", {
-          header: "Email",
-          cell: (info) => <span className="text-gray-600">{info.getValue()}</span>,
-        }),
-        columnHelper.accessor("phone", {
-          header: "Phone",
-          cell: (info) => <span className="text-gray-600">{info.getValue()}</span>,
-        }),
-        columnHelper.accessor("address", {
-          header: "Address",
-          cell: (info) => (
-            <span className="text-gray-600 max-w-xs truncate block">
-              {info.getValue()}
-            </span>
-          ),
-        }),
-        columnHelper.accessor("created_at", {
-          header: ({ column }) => {
-            return (
-              <div
-                className="cursor-pointer select-none flex items-center"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              >
-                Created Date
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-              </div>
-            );
-          },
-          cell: (info) => (
-            <span className="text-gray-600">
-              {new Date(info.getValue()).toLocaleDateString()}
-            </span>
-          ),
-        }),
-        columnHelper.display({
-          id: "actions",
-          header: () => <div className="text-center">Actions</div>,
-          cell: (props) => {
-            return (
-              <div className="flex justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                  onClick={() => handleEdit(props.row.original)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </div>
-            );
-          },
-        }),
-      ];      
-}
-
+  return [
+    columnHelper.accessor("name", {
+      enableSorting: true,
+      header: ({ column }) => {
+        return (
+          <div
+            className="cursor-pointer select-none flex items-center"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </div>
+        );
+      },
+      cell: (info) => (
+        <span className="font-medium text-gray-900">{info.getValue()}</span>
+      ),
+    }),
+    columnHelper.accessor("email", {
+      header: "Email",
+      cell: (info) => <span className="text-gray-600">{info.getValue()}</span>,
+    }),
+    columnHelper.accessor("phone", {
+      header: "Phone",
+      cell: (info) => <span className="text-gray-600">{info.getValue()}</span>,
+    }),
+    columnHelper.accessor("address", {
+      header: "Address",
+      cell: (info) => (
+        <span className="text-gray-600 max-w-xs truncate block">
+          {info.getValue()}
+        </span>
+      ),
+    }),
+    columnHelper.accessor("created_at", {
+      header: ({ column }) => {
+        return (
+          <div
+            className="cursor-pointer select-none flex items-center"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Created Date
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </div>
+        );
+      },
+      cell: (info) => (
+        <span className="text-gray-600">
+          {new Date(info.getValue()).toLocaleDateString()}
+        </span>
+      ),
+    }),
+    columnHelper.display({
+      id: "actions",
+      header: () => <div className="text-center">Actions</div>,
+      cell: (props) => {
+        return (
+          <div className="flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              onClick={() => handleEdit(props.row.original)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+    }),
+  ];
+};
 
 export default function BuyersTable() {
   const router = useRouter();
