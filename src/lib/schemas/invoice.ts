@@ -4,6 +4,7 @@ export const invoiceSchema = z.object({
   invoice_number: z.string().min(1, 'Invoice number is required'),
   seller_id: z.string().uuid('Please select a seller'),
   buyer: z.object({
+    id : z.string().optional(),
     name: z.string().min(1, 'Buyer name is required'),
     email: z.string().email('Invalid email').optional().or(z.literal('')),
     phone: z.string().optional(),

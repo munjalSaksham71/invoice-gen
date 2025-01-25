@@ -1,11 +1,11 @@
 'use client'
 import LoginForm from '@/components/auth/login-form'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+// import { supabase } from '@/lib/supabase'
+// import { useRouter } from 'next/navigation'
+// import { useEffect } from 'react'
 
 export default function LoginPage() {
-    const router = useRouter();
+    // const router = useRouter();
     // useEffect(() => {
     //     const checkUser = async () => {
     //       const { data: { session } } = await supabase.auth.getSession()
