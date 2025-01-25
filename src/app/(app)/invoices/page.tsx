@@ -282,55 +282,19 @@ export default function Invoices() {
     onPaginationChange: setPagination,
   })
 
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const { data: invoices, error: invoicesError } = await supabase
-          .from('invoices')
-          .select(`
-            id,
-            invoice_number,
-            status,
-            issue_date,
-            companies!buyer_id (
-              name,
-              email
-            )
-          `)
-          .order('created_at', { ascending: false })
-
-        if (invoicesError) throw invoicesError
-
-        const { data: totals, error: totalsError } = await supabase
-          .from('invoice_totals')
-          .select('invoice_id, grand_total')
-
-        if (totalsError) throw totalsError
-
-        const totalsMap = new Map(
-          totals.map(total => [total.invoice_id, total.grand_total])
-        )
-
-        const transformedData = invoices.map((invoice: any)  => ({
-          id: invoice.id,
-          invoice_number: invoice.invoice_number,
-          status: invoice.status,
-          buyer: {
-            name: invoice.companies?.name,
-            email: invoice.companies?.email
-          },
-          issue_date: invoice.issue_date,
-          grand_total: totalsMap.get(invoice.id) || 0
-        }))
-
-        setData(transformedData)
-      } catch (error) {
-        console.error('Error fetching invoices:', error)
-      } finally {
-        setLoading(false)
-      }
+ const fetchInvoices = async () => {
+    try {
+      const response = await fetch('/api/invoices');
+      const data = await response.json();
+      setData(data)
     }
-
+    catch (error) {
+      console.error(error,'error while fetching invoices from DB')
+    }finally {
+      setLoading(false)
+    }
+ }
+  useEffect(() => {
     fetchInvoices()
   }, [])
 
