@@ -39,10 +39,12 @@ export default function InvoiceForm({
   onSubmit,
 }: InvoiceFormProps) {
   const [sellers, setSellers] = useState<Company[]>([]);
-  const [products, setProducts] = useState<
+  const [buyers, setBuyers]  = useState<Company[]>([]);
+   const [products, setProducts] = useState<
     Array<{ id: string; name: string; unit_price: number }>
   >([]);
   const [selectedSeller, setSelectedSeller] = useState<Company | null>(null);
+  const [selectedBuyer, setSelectedBuyer] = useState<Company | null>(null);
   const router = useRouter();
 
   const form = useForm<InvoiceFormValues>({
@@ -50,12 +52,7 @@ export default function InvoiceForm({
     defaultValues: {
       invoice_number: "",
       seller_id: "",
-      buyer: {
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-      },
+      buyer_id: "",
       issue_date: format(new Date(), "yyyy-MM-dd"),
       due_date: "",
       products: [
@@ -96,6 +93,14 @@ export default function InvoiceForm({
       if (data) setSellers(data);
     };
 
+    const fetchBuyers = async () => {
+      const { data } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("is_seller", false);
+      if (data) setBuyers(data);
+    };
+
     const fetchProducts = async () => {
       const { data } = await supabase
         .from("products")
@@ -105,6 +110,7 @@ export default function InvoiceForm({
 
     fetchSellers();
     fetchProducts();
+    fetchBuyers();
   }, []);
 
   useEffect(() => {
@@ -114,9 +120,16 @@ export default function InvoiceForm({
     }
   }, [values.seller_id, sellers]);
 
+  useEffect(() => {
+    if (values.buyer_id) {
+      const buyer = buyers.find((b) => b.id === values.buyer_id);
+      setSelectedBuyer(buyer || null);
+    }
+  }, [values.buyer_id, buyers]);
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)}  className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column */}
           <div className="space-y-6">
@@ -220,63 +233,50 @@ export default function InvoiceForm({
             {/* Buyer Details */}
             <Card>
               <CardContent className="pt-6">
-                <h3 className="text-lg font-semibold mb-4">Buyer Details</h3>
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="buyer.name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                <FormField
+                  control={form.control}
+                  name="buyer_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Buyer</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select buyer" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {buyers.map((buyer) => (
+                            <SelectItem key={buyer.id} value={buyer.id}>
+                              {buyer.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {selectedBuyer && (
+                  <div className="mt-4 text-sm space-y-2">
+                    <p>
+                      <span className="font-medium">Email:</span>{" "}
+                      {selectedBuyer.email}
+                    </p>
+                    {selectedBuyer.phone && (
+                      <p>
+                        <span className="font-medium">Phone:</span>{" "}
+                        {selectedBuyer.phone}
+                      </p>
                     )}
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="buyer.email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="buyer.phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <p>
+                      <span className="font-medium">Address:</span>{" "}
+                      {selectedBuyer.address}
+                    </p>
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="buyer.address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -500,7 +500,7 @@ export default function InvoiceForm({
         </div>
 
         <div className="flex justify-end gap-4 pt-6">
-          <Button variant="outline" onClick={() => router.push('/dashboard')}>
+          <Button variant="outline" onClick={() => router.push('/invoices')}>
             Cancel
           </Button>
           <Button type="submit">Save</Button>
