@@ -25,26 +25,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    
-      <div
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <TooltipProvider>
-          <div className="flex min-h-screen w-full">
-            <AppSidebar />
-            <div
-              className="flex-1 flex flex-col transition-all duration-300"
-              style={{
-                paddingLeft: "4rem",
-              }}
-            >
-              <main className="flex-1 p-6 w-full justify-center">
-                {children}
-              </main>
-            </div>
+    <div className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <TooltipProvider>
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col transition-all duration-300">
+            <main className="flex-1 w-full justify-center">{children}</main>
           </div>
-        </TooltipProvider>
-      </div>
-
+        </div>
+      </TooltipProvider>
+    </div>
   );
 }

@@ -56,7 +56,7 @@ export default function DashboardPage() {
   const getSingleValue = (path: string) => get(metrics, path, 0);
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gray-50 h-screen w-full overflow-y-auto">
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
