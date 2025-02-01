@@ -20,7 +20,6 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import { Pencil, ArrowUpDown, Plus } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import { Product } from "@/types/invoice";
 import ProductForm from "@/components/products/product-form";
 import { useRouter } from "next/navigation";
@@ -128,22 +127,9 @@ export default function ProductsDashboard() {
 
   const fetchProducts = async () => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user){
-        router.push('/login')
-        throw new Error("User not logged in");
-      }
-
-      const { data: products, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setData(products || []);
+      const response = await fetch('/api/product');
+      const data = await response.json();
+      setData(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -157,34 +143,19 @@ export default function ProductsDashboard() {
 
   const handleSubmit = async (product: Product) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user){
-        router.push('/login')
-        throw new Error("User not logged in");
+      const payload=selectedProduct ? {...product, id:selectedProduct.id}: product;
+      const response = await fetch('/api/product', {
+        method: 'POST', // Specify the method as POST
+        headers: {
+          'Content-Type': 'application/json', // Set the content type to JSON
+        },
+        body: JSON.stringify(payload), // Include the data you want to send in the body
+      });
+      if(response.status === 200){
+        setIsDrawerOpen(false);
+        setSelectedProduct(null);
+        await fetchProducts();
       }
-
-      if (selectedProduct) {
-        // Update existing product
-        const { error } = await supabase
-          .from("products")
-          .update({ ...product, user_id: user.id })
-          .eq("id", selectedProduct.id);
-
-        if (error) throw error;
-      } else {
-        // Add new product
-        const { error } = await supabase
-          .from("products")
-          .insert([{ ...product, user_id: user.id }]);
-
-        if (error) throw error;
-      }
-
-      setIsDrawerOpen(false);
-      setSelectedProduct(null);
-      await fetchProducts();
     } catch (error) {
       console.error("Error saving product:", error);
     }
